@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Enhanced Weather App</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #1e3c72, #2a5298);
+            color: #333;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        .navbar {
+            background-color: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            padding: 1rem 2rem;
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .navbar ul {
+            list-style-type: none;
+            display: flex;
+            justify-content: space-around;
+        }
+
+        .navbar ul li a {
+            color: white;
+            text-decoration: none;
+            font-weight: 600;
+            transition: color 0.3s ease;
+        }
+
+        .navbar ul li a:hover {
+            color: #ffd700;
+        }
+
+        .landing-page {
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            color: white;
+            padding: 2rem;
+            animation: fadeIn 1.5s ease-in-out;
+        }
+
+        .landing-page h1 {
+            font-size: 3.5rem;
+            margin-bottom: 1rem;
+            animation: fadeInDown 1s ease-out;
+        }
+
+        .landing-page p {
+            font-size: 1.2rem;
+            max-width: 600px;
+            margin: 0 auto 2rem;
+            animation: fadeInUp 1s ease-out 0.5s both;
+        }
+
+        .cta-button {
+            padding: 0.8rem 2rem;
+            font-size: 1.1rem;
+            background-color: #ffd700;
+            color: #333;
+            border: none;
+            border-radius: 30px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            animation: pulse 2s infinite;
+        }
+
+        .cta-button:hover {
+            background-color: #ffed4a;
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .weather-app {
+            max-width: 500px;
+            margin: 2rem auto;
+            background: rgba(255, 255, 255, 0.9);
+            padding: 2rem;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(10px);
+            transform: translateY(50px);
+            opacity: 0;
+            transition: all 0.5s ease-out;
+        }
+
+        .weather-app.visible {
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        .weather-app h2 {
+            font-size: 2.2rem;
+            margin-bottom: 1.5rem;
+            color: #1e3c72;
+        }
+
+        .weather-app input {
+            width: 100%;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            border-radius: 30px;
+            border: none;
+            font-size: 1rem;
+            background-color: #f0f0f0;
+            transition: all 0.3s ease;
+        }
+
+        .weather-app input:focus {
+            outline: none;
+            box-shadow: 0 0 15px rgba(30, 60, 114, 0.5);
+        }
+
+        .weather-app button {
+            width: 100%;
+            padding: 1rem;
+            background-color: #1e3c72;
+            color: white;
+            border: none;
+            border-radius: 30px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .weather-app button:hover {
+            background-color: #2a5298;
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        #weatherInfo {
+            margin-top: 1.5rem;
+            text-align: left;
+        }
+
+        .about, .contact {
+            max-width: 800px;
+            margin: 3rem auto;
+            text-align: center;
+            color: white;
+        }
+
+        .about h2, .contact h2 {
+            font-size: 2.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .about p, .contact p {
+            font-size: 1.2rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .contact form {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .contact form input, .contact form textarea {
+            width: 100%;
+            padding: 1rem;
+            border-radius: 20px;
+            border: none;
+            font-size: 1rem;
+            background-color: #f0f0f0;
+        }
+
+        .contact form button {
+            padding: 1rem;
+            border-radius: 30px;
+            border: none;
+            background-color: #ffd700;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .contact form button:hover {
+            background-color: #ffed4a;
+        }
+
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes pulse {
+            0% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.05);
+            }
+            100% {
+                transform: scale(1);
+            }
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .landing-page h1 {
+                font-size: 2.5rem;
+            }
+
+            .weather-app {
+                padding: 1.5rem;
+            }
+
+            .about h2, .contact h2 {
+                font-size: 2rem;
+            }
+
+            .about p, .contact p {
+                font-size: 1rem;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .landing-page h1 {
+                font-size: 2rem;
+            }
+
+            .cta-button {
+                padding: 0.6rem 1.5rem;
+                font-size: 1rem;
+            }
+
+            .weather-app {
+                max-width: 100%;
+                padding: 1rem;
+            }
+
+            .weather-app h2 {
+                font-size: 1.8rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <ul>
+            <li><a href="#home">Home</a></li>
+            <li><a href="#app">Weather App</a></li>
+            <li><a href="#about">About</a></li>
+            <li><a href="#contact">Contact</a></li>
+        </ul>
+    </nav>
+
+    <section id="home" class="landing-page">
+        <div>
+            <h1>Welcome to WeatherNow</h1>
+            <p>Get accurate and up-to-date weather information for any location around the globe. Start exploring now!</p>
+            <button class="cta-button" onclick="scrollToApp()">Check Weather</button>
+        </div>
+    </section>
+
+    <section id="app" class="weather-app">
+        <h2>Weather Forecast</h2>
+        <input type="text" id="location" placeholder="Enter location (e.g., city or coordinates)">
+        <button onclick="getWeather()">Get Weather</button>
+        <div id="weatherInfo">
+            <!-- Weather data will be displayed here -->
+        </div>
+    </section>
+
+    <section id="about" class="about">
+        <h2>About Us</h2>
+        <p>WeatherNow is dedicated to providing real-time and accurate weather updates for any location in the world. Our mission is to help people plan their day, no matter where they are, by giving reliable weather information. Whether you're traveling or planning an event, WeatherNow is here to keep you informed.</p>
+    </section>
+
+    <section id="contact" class="contact">
+        <h2>
+            Contact Us</h2>
+            <p>If you have any questions or feedback, feel free to reach out to us!</p>
+            <form onsubmit="sendEmail(event)">
+                <input type="text" id="name" placeholder="Your Name" required>
+                <input type="email" id="email" placeholder="Your Email" required>
+                <textarea id="message" rows="5" placeholder="Your Message" required></textarea>
+                <button type="submit">Send Message</button>
+            </form>
+        </section>
+    
+        <script>
+            function scrollToApp() {
+                const appSection = document.querySelector('.weather-app');
+                appSection.scrollIntoView({ behavior: 'smooth' });
+                setTimeout(() => {
+                    appSection.classList.add('visible');
+                }, 500);
+            }
+    
+            async function getWeather() {
+                const location = document.getElementById('location').value;
+                const url = `https://weatherapi-com.p.rapidapi.com/current.json?q=${encodeURIComponent(location)}`;
+                const options = {
+                    method: 'GET',
+                    headers: {
+                        'x-rapidapi-key': 'a182d80801msh61848f774793515p14c9b3jsn87519cbaa5b0',
+                        'x-rapidapi-host': 'weatherapi-com.p.rapidapi.com'
+                    }
+                };
+    
+                try {
+                    const response = await fetch(url, options);
+                    const result = await response.json();
+    
+                    const weatherInfoDiv = document.getElementById('weatherInfo');
+                    weatherInfoDiv.innerHTML = `
+                        <div class="weather-details">
+                            <h3>${result.location.name}, ${result.location.region}, ${result.location.country}</h3>
+                        </div>
+                        <p>Temperature: ${result.current.temp_c}°C (${result.current.temp_f}°F)</p>
+                        <p>Condition: ${result.current.condition.text}</p>
+                        <p>Wind: ${result.current.wind_kph} kph (${result.current.wind_mph} mph)</p>
+                        <p>Humidity: ${result.current.humidity}%</p>
+                    `;
+                } catch (error) {
+                    console.error(error);
+                    document.getElementById('weatherInfo').innerText = 'Error fetching weather data. Please try again.';
+                }
+            }
+    
+            function sendEmail(event) {
+                event.preventDefault(); // Prevent default form submission
+    
+                const name = document.getElementById('name').value;
+                const email = document.getElementById('email').value;
+                const message = document.getElementById('message').value;
+    
+                // You can use your email sending logic here, or integrate an API service to handle emails
+                console.log(`Sending email from: ${name} <${email}> - Message: ${message}`);
+                alert('Your message has been sent! We will get back to you shortly.');
+                document.querySelector('.contact form').reset(); // Reset the form fields after submission
+            }
+    
+            // Show weather app section when scrolled into view
+            window.addEventListener('scroll', () => {
+                const appSection = document.querySelector('.weather-app');
+                const rect = appSection.getBoundingClientRect();
+                const isVisible = rect.top < window.innerHeight && rect.bottom >= 0;
+                if (isVisible) {
+                    appSection.classList.add('visible');
+                }
+            });
+        </script>
+    </body>
+    </html>
+    
